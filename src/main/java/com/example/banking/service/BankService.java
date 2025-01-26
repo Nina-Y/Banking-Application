@@ -11,7 +11,7 @@ public class BankService {
 
     public String deposit(double amount) {
         if (amount > 0) {
-            myAccount.setBalance(myAccount.getBalance() + amount); // Update balance
+            myAccount.setBalance(myAccount.getBalance() + amount);
             return "Successfully deposited: EUR" + amount + ". New Balance: EUR" + myAccount.getBalance();
         } else {
             return "Deposit amount must be positive.";
@@ -20,7 +20,7 @@ public class BankService {
 
     public String withdraw(double amount) {
         if (amount > 0 && amount <= myAccount.getBalance()) {
-            myAccount.setBalance(myAccount.getBalance() - amount); // Update balance
+            myAccount.setBalance(myAccount.getBalance() - amount);
             return "Successfully withdrew: EUR" + amount + ". New Balance: EUR" + myAccount.getBalance();
         } else if (amount > myAccount.getBalance()) {
             return "Insufficient balance. Current Balance: EUR" + myAccount.getBalance();
