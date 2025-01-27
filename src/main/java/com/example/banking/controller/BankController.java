@@ -22,9 +22,6 @@ public class BankController {
 
     @GetMapping("/external")
     public String getExternalBank()  {
-        return restTemplate.getForObject(
-                "https://banking-application-0xkl.onrender.com/api/v1/bank/internal",
-                String.class
-        );
+        return restTemplate.getForObject("https://banking-application-53wg.onrender.com/api/v1/bank/internal", String.class);
     }
 }

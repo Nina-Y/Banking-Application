@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/account") // http://localhost:8080/swagger-ui/index.html // https://banking-application-0xkl.onrender.com/swagger-ui/index.html
+@RequestMapping("/api/account") // http://localhost:8080/swagger-ui/index.html // https://banking-application-53wg.onrender.com/swagger-ui/index.html
 public class BankAccountController {
 
     @Autowired
