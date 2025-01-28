@@ -5,10 +5,10 @@ public class ApiResponse {
     private double balance;
     private String accountNumber;
 
-    public ApiResponse(String message, double balance, String accountNumber) {
+    public ApiResponse(String message, String accountNumber, double balance) {
         this.message = message;
-        this.balance = balance;
         this.accountNumber = accountNumber;
+        this.balance = balance;
     }
 
     public ApiResponse(String message) {
