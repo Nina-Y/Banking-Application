@@ -1,5 +1,6 @@
 package com.example.banking.controller;
 
+import com.example.banking.dto.TransactionDto;
 import com.example.banking.model.BankAccount;
 import com.example.banking.service.BankService;
 import org.slf4j.Logger;
@@ -30,14 +31,15 @@ public class BankAccountController {
     }*/
 
     @PostMapping("/transfer/external")
-    public ResponseEntity<Object> transferExternal(@RequestBody String fromAccountNumber,String toAccountNumber, double amount) {
-        logger.info("Transfer started");
-        return bankService.receiveTransferFromExternal(toAccountNumber, amount);
+    public ResponseEntity<Object> transferExternal(@RequestBody TransactionDto transactionDto) {
+        logger.info("Transfer started from {} to {} for amount {}",
+                transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(), transactionDto.getAmount());
+
+        return bankService.receiveTransferFromExternal(transactionDto.getToAccountNumber(), transactionDto.getAmount());
     }
 
     @PostMapping("/transfer/internal")
     public ResponseEntity<Object> transfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
-
         return bankService.transferInternal(fromAccountNumber, toAccountNumber, amount);
     }
 
@@ -68,11 +70,6 @@ public class BankAccountController {
 
         return bankService.getBalance(accountNumber);
     }
-
-    /*@PostMapping("/receive")
-    public ResponseEntity<Object> receiveTransfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
-        return bankService.receiveTransfer(fromAccountNumber, toAccountNumber, amount);
-    }*/
 
     @GetMapping("/public")
     public ResponseEntity<Object> getAllAccounts() {
