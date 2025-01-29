@@ -3,6 +3,7 @@ package com.example.banking.service;
 import com.example.banking.model.ApiResponse;
 import com.example.banking.model.BankAccount;
 import com.example.banking.repository.BankAccountRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BankService {
@@ -36,36 +39,51 @@ public class BankService {
     }
 
     public ResponseEntity<Object> transferToExternalBank(String senderAccountNumber, String recipientAccountNumber, double amount) {
+        logger.info("Initiating external transfer from {} to {} for amount: {}", senderAccountNumber, recipientAccountNumber, amount);
 
         BankAccount sender = bankAccountRepository.findByAccountNumber(senderAccountNumber);
         if (sender == null || sender.getBalance() < amount) {
+            logger.warn("Transfer failed: Sender account not found or insufficient funds.");
             return ResponseEntity.badRequest().body("Sender account not found or insufficient funds.");
         }
 
-        String externalApiUrl = "https://webhook.site/e39b162b-5828-415b-86a0-4b891630943c"; // a mock API
+        String externalApiUrl = "https://webhook.site/e39b162b-5828-415b-86a0-4b891630943c"; // Mock API
 
-        String requestBody = String.format(
-                "{\"fromAccountNumber\": \"%s\", \"toAccountNumber\": \"%s\", \"amount\": %.2f}",
-                senderAccountNumber, recipientAccountNumber, amount
-        );
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("fromAccountNumber", senderAccountNumber);
+        requestBodyMap.put("toAccountNumber", recipientAccountNumber);
+        requestBodyMap.put("amount", amount);
+
+        String requestBody;
+        try {
+            requestBody = new ObjectMapper().writeValueAsString(requestBodyMap);
+        } catch (Exception e) {
+            logger.error("Failed to generate JSON: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Error generating JSON payload.");
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
+        logger.info("Sending request to external API: {}", externalApiUrl);
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(externalApiUrl, HttpMethod.POST, request, String.class);
+            logger.info("Received response from external API: {}", response.getBody());
         } catch (Exception e) {
+            logger.error("Failed to connect to external bank: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Failed to connect to external bank: " + e.getMessage());
         }
 
         if (response.getStatusCode().is2xxSuccessful()) {
             sender.setBalance(sender.getBalance() - amount);
             bankAccountRepository.save(sender);
+            logger.info("Transfer successful! New balance: {}", sender.getBalance());
             return ResponseEntity.ok("Transfer successful: " + response.getBody());
         } else {
+            logger.error("Transfer failed. Response: {}", response.getBody());
             return ResponseEntity.badRequest().body("Transfer failed: " + response.getBody());
         }
     }
