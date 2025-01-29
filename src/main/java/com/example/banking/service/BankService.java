@@ -47,7 +47,7 @@ public class BankService {
             return ResponseEntity.badRequest().body("Sender account not found or insufficient funds.");
         }
 
-        String externalApiUrl = "https://webhook.site/e39b162b-5828-415b-86a0-4b891630943c"; // Mock API
+        String externalApiUrl = "http://13.60.62.171/api/v1/accounts//transfer/external";
 
         Map<String, Object> requestBodyMap = new HashMap<>();
         requestBodyMap.put("fromAccountNumber", senderAccountNumber);
