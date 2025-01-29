@@ -193,15 +193,18 @@ public class BankService {
         return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: invalid amount or insufficient sender balance"));
     }*/
 
-    public ResponseEntity<Object> receiveTransferFromExternal(String senderAccountNumber, String recipientAccountNumber, double amount) {
+    public ResponseEntity<Object> receiveTransferFromExternal(String recipientAccountNumber, double amount) {
+        logger.info("Initiating external transfer to {} for amount: {}", recipientAccountNumber, amount);
 
         BankAccount recipient = bankAccountRepository.findByAccountNumber(recipientAccountNumber);
 
         if (recipient == null) {
+            logger.error("User not found");
             return ResponseEntity.badRequest().body(new ApiResponse("One or both accounts not found"));
         }
 
         if (amount > 0) {
+            logger.info("Adding to the balance");
             recipient.setBalance(recipient.getBalance() + amount);
             bankAccountRepository.save(recipient);
             return ResponseEntity.ok(

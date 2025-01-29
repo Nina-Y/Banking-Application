@@ -2,6 +2,8 @@ package com.example.banking.controller;
 
 import com.example.banking.model.BankAccount;
 import com.example.banking.service.BankService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("/api/v1/accounts") // http://localhost:8080/swagger-ui/index.html // https://banking-application-53wg.onrender.com/swagger-ui/index.html
 public class BankAccountController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BankService.class);
 
     private final RestTemplate restTemplate;
 
@@ -26,8 +30,9 @@ public class BankAccountController {
     }*/
 
     @PostMapping("/transfer/external")
-    public ResponseEntity<Object> transferExternal(@RequestParam String fromAccountNumber,String toAccountNumber, double amount) {
-        return bankService.receiveTransferFromExternal(fromAccountNumber, toAccountNumber, amount);
+    public ResponseEntity<Object> transferExternal(@RequestBody String fromAccountNumber,String toAccountNumber, double amount) {
+        logger.info("Transfer started");
+        return bankService.receiveTransferFromExternal(toAccountNumber, amount);
     }
 
     @PostMapping("/transfer/internal")
@@ -64,10 +69,10 @@ public class BankAccountController {
         return bankService.getBalance(accountNumber);
     }
 
-    @PostMapping("/receive")
+    /*@PostMapping("/receive")
     public ResponseEntity<Object> receiveTransfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
         return bankService.receiveTransfer(fromAccountNumber, toAccountNumber, amount);
-    }
+    }*/
 
     @GetMapping("/public")
     public ResponseEntity<Object> getAllAccounts() {
