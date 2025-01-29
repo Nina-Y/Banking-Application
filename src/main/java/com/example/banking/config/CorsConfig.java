@@ -12,8 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://banking-application-53wg.onrender.com",
-                        "http://13.60.62.171")
+                .allowedOrigins("*") // Allowed to all, for testing only
                 .allowedMethods("GET", "POST")
                 .allowedHeaders("*")
                 .allowCredentials(true);
