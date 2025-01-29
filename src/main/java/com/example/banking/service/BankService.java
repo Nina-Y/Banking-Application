@@ -4,6 +4,8 @@ import com.example.banking.model.ApiResponse;
 import com.example.banking.model.BankAccount;
 import com.example.banking.repository.BankAccountRepository;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public class BankService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BankService.class);
 
     private final BankAccountRepository bankAccountRepository;
     private final RestTemplate restTemplate;
@@ -38,7 +42,7 @@ public class BankService {
             return ResponseEntity.badRequest().body("Sender account not found or insufficient funds.");
         }
 
-        String externalApiUrl = "https://banking-application-53wg.onrender.com/api/v1/accounts/transfer/external"; // me (test)
+        String externalApiUrl = "https://webhook.site/e39b162b-5828-415b-86a0-4b891630943c"; // a mock API
 
         String requestBody = String.format(
                 "{\"fromAccountNumber\": \"%s\", \"toAccountNumber\": \"%s\", \"amount\": %.2f}",
