@@ -47,7 +47,7 @@ public class BankService {
             return ResponseEntity.badRequest().body("Sender account not found or insufficient funds.");
         }
 
-        String externalApiUrl = "http://13.60.62.171/api/v1/accounts//transfer/external";
+        String externalApiUrl = "http://13.60.62.171/api/v1/accounts/transfer/external";
 
         Map<String, Object> requestBodyMap = new HashMap<>();
         requestBodyMap.put("fromAccountNumber", senderAccountNumber);
