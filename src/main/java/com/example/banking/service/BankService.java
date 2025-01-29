@@ -20,11 +20,11 @@ public class BankService {
 
     @PostConstruct
     public void prepopulateAccounts() {
-        if (bankAccountRepository.findByAccountNumber("NINYUS_abcdef12345678") == null) {
-            bankAccountRepository.save(new BankAccount("NINYUS_abcdef12345678", 0.0));
+        if (bankAccountRepository.findByAccountNumber("NINYUS_abcdef123456") == null) {
+            bankAccountRepository.save(new BankAccount("NINYUS_abcdef123456", 0.0));
         }
-        if (bankAccountRepository.findByAccountNumber("NAMSUR_abcdef87654321") == null) {
-            bankAccountRepository.save(new BankAccount("NAMSUR_abcdef87654321", 0.0));
+        if (bankAccountRepository.findByAccountNumber("NAMSUR_abcdef654321") == null) {
+            bankAccountRepository.save(new BankAccount("NAMSUR_abcdef654321", 0.0));
         }
     }
 
