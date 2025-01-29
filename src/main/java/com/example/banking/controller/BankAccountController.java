@@ -20,10 +20,14 @@ public class BankAccountController {
     @Autowired
     private BankService bankService;
 
-    @PostMapping("/transfer/external")
-    public ResponseEntity<Object> transferToExternal(@RequestParam String senderAccountNumber, String recipientAccountNumber, double amount) {
+    /*@PostMapping("/transfer/external")
+    public ResponseEntity<Object> transferExternal(@RequestParam String fromAccountNumber,String toAccountNumber, double amount) {
+        return bankService.transferToExternalBank(fromAccountNumber, toAccountNumber, amount);
+    }*/
 
-        return bankService.transferToExternalBank(senderAccountNumber, recipientAccountNumber, amount);
+    @PostMapping("/transfer/external")
+    public ResponseEntity<Object> transferExternal(@RequestParam String fromAccountNumber,String toAccountNumber, double amount) {
+        return bankService.receiveTransferFromExternal(fromAccountNumber, toAccountNumber, amount);
     }
 
     @PostMapping("/transfer/internal")
