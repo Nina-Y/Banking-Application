@@ -5,13 +5,32 @@ import com.example.banking.service.BankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/v1/accounts") // http://localhost:8080/swagger-ui/index.html // https://banking-application-53wg.onrender.com/swagger-ui/index.html
 public class BankAccountController {
 
+    private final RestTemplate restTemplate;
+
+    public BankAccountController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Autowired
     private BankService bankService;
+
+    @PostMapping("/transfer/external")
+    public ResponseEntity<Object> transferToExternal(@RequestParam String senderAccountNumber, String recipientAccountNumber, double amount) {
+
+        return bankService.transferToExternalBank(senderAccountNumber, recipientAccountNumber, amount);
+    }
+
+    @PostMapping("/transfer/internal")
+    public ResponseEntity<Object> transfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
+
+        return bankService.transferInternal(fromAccountNumber, toAccountNumber, amount);
+    }
 
     @PostMapping("/addNewAccount")
     public ResponseEntity<Object> createAccount(@RequestBody BankAccount newAccount) {
@@ -41,12 +60,6 @@ public class BankAccountController {
         return bankService.getBalance(accountNumber);
     }
 
-    @PostMapping("/transfer/external")
-    public ResponseEntity<Object> transfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
-
-        return bankService.transfer(fromAccountNumber, toAccountNumber, amount);
-    }
-
     @PostMapping("/receive")
     public ResponseEntity<Object> receiveTransfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
         return bankService.receiveTransfer(fromAccountNumber, toAccountNumber, amount);
@@ -55,5 +68,15 @@ public class BankAccountController {
     @GetMapping("/public")
     public ResponseEntity<Object> getAllAccounts() {
         return bankService.getAllAccounts();
+    }
+
+    @GetMapping("/internal")
+    public String getInternalBank() {
+        return "Hello from bank of Nina!";
+    }
+
+    @GetMapping("/external")
+    public String getExternalBank()  {
+        return restTemplate.getForObject("https://banking-application-53wg.onrender.com/api/v1/bank/internal", String.class);
     }
 }
