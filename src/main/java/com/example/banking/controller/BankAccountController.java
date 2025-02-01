@@ -1,17 +1,50 @@
 package com.example.banking.controller;
 
+import com.example.banking.dto.TransactionDto;
 import com.example.banking.model.BankAccount;
 import com.example.banking.service.BankService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+// http://localhost:8080/swagger-ui/index.html
+// https://banking-application-53wg.onrender.com/swagger-ui/index.html
+// https://banking-application-53wg.onrender.com/api/v1/accounts/public
 
 @RestController
-@RequestMapping("/api/v1/accounts") // http://localhost:8080/swagger-ui/index.html // https://banking-application-53wg.onrender.com/swagger-ui/index.html
+@RequestMapping("/api/v1/accounts")
 public class BankAccountController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BankService.class);
+
+    private final RestTemplate restTemplate;
+
+    public BankAccountController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Autowired
     private BankService bankService;
+
+    @PostMapping("/transfer/external")
+    public ResponseEntity<Object> transferExternal(@Valid @RequestBody TransactionDto transactionDto) {
+        logger.info("Transfer started from {} to {} for amount {}",
+                transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(), transactionDto.getAmount());
+        return bankService.transferToExternalBank(
+                transactionDto.getFromAccountNumber(),
+                transactionDto.getToAccountNumber(),
+                transactionDto.getAmount()
+        );
+    }
+
+    @PostMapping("/transfer/internal")
+    public ResponseEntity<Object> transfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
+        return bankService.transferInternal(fromAccountNumber, toAccountNumber, amount);
+    }
 
     @PostMapping("/addNewAccount")
     public ResponseEntity<Object> createAccount(@RequestBody BankAccount newAccount) {
@@ -41,19 +74,18 @@ public class BankAccountController {
         return bankService.getBalance(accountNumber);
     }
 
-    @PostMapping("/transfer/external")
-    public ResponseEntity<Object> transfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
-
-        return bankService.transfer(fromAccountNumber, toAccountNumber, amount);
-    }
-
-    @PostMapping("/receive")
-    public ResponseEntity<Object> receiveTransfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
-        return bankService.receiveTransfer(fromAccountNumber, toAccountNumber, amount);
-    }
-
     @GetMapping("/public")
     public ResponseEntity<Object> getAllAccounts() {
         return bankService.getAllAccounts();
+    }
+
+    @GetMapping("/internal")
+    public String getInternalBank() {
+        return "Hello from bank of Nina!";
+    }
+
+    @GetMapping("/external")
+    public String getExternalBank()  {
+        return restTemplate.getForObject("https://banking-application-53wg.onrender.com/api/v1/accounts/internal", String.class);
     }
 }

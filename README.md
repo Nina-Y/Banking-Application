@@ -1,41 +1,34 @@
 ## Banking Application
 
-### Spring Boot application providing basic banking functionalities:
+### Overview
+A Spring Boot application providing essential banking functionalities, including deposits, withdrawals, balance checks, and fund transfers (internal and external).
 
-- Deposit funds
-- Withdraw funds
-- Check balance 
-- Transfer funds 
-- Receive funds
+### **Endpoints**
+**Base URL (Localhost):** `http://localhost:8080/api/v1/accounts`  
+**Base URL (Deployed):** `https://banking-application-53wg.onrender.com/api/v1/accounts`
 
-### Endpoints
+#### **Key Endpoints**
+- **Deposit:** `POST /deposit`
+- **Withdraw:** `POST /withdraw`
+- **Check Balance:** `GET /balance?accountNumber={accountNumber}`
+- **Internal Transfer:** `POST /transfer/internal`
+- **External Transfer:** `POST /transfer/external`
+- **Receive Funds:** `POST /receive`
+- **List Public Accounts:** `GET /public`
 
-Base URL: http://localhost:8080/api/account
+### **Running the Application**
+1. Clone repository: `git clone <repository-url>`
+2. Navigate to project: `cd banking-application`
+3. Build & run: `mvn spring-boot:run`
+4. Access API via: `http://localhost:8080/swagger-ui/index.html`
 
-### Key Endpoints
+### **Technologies Used**
+- Java 21, Spring Boot, REST API
+- PostgreSQL (Remote database hosted on Render)
+- HTTP Client (for external API calls)
+- Render (Cloud Deployment)
 
-- Deposit: POST /deposit?amount={value}
-- Withdraw: POST /withdraw?amount={value}
-- Check Balance: GET /balance
-- Transfer: POST /transfer?amount={value}
-- Receive: POST /receive?amount={value}
-
-### How to Run
-
-1. Clone the repository: git clone <repository-url>
-2. Build and run: mvn spring-boot:run
-
-Access via browser or Postman at http://localhost:8080.
-
-### Technologies Used
-
-Java 21
-Spring Boot
-REST API
-
-### Future Enhancements
-
-- Database integration
-- User authentication
+### **Future Enhancements**
+- Authentication & role-based access
 - Improved error handling
-- Banking system integration (interaction with other groupmates)
+- Enhanced external bank integrations
