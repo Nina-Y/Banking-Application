@@ -1,6 +1,7 @@
 package com.example.banking.controller;
 
 import com.example.banking.dto.TransactionDto;
+import com.example.banking.model.ApiResponse;
 import com.example.banking.model.BankAccount;
 import com.example.banking.service.BankService;
 import jakarta.validation.Valid;
@@ -32,13 +33,23 @@ public class BankAccountController {
 
     @PostMapping("/transfer/external")
     public ResponseEntity<Object> transferExternal(@Valid @RequestBody TransactionDto transactionDto) {
-        logger.info("Transfer started from {} to {} for amount {}",
+        logger.info("Processing external transfer from {} to {} for amount {}",
                 transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(), transactionDto.getAmount());
-        return bankService.transferToExternalBank(
-                transactionDto.getFromAccountNumber(),
-                transactionDto.getToAccountNumber(),
-                transactionDto.getAmount()
-        );
+
+        if (transactionDto.getToAccountNumber().equals("YUSNIN_abcdef123456")) {
+            return bankService.receiveTransferFromExternal(transactionDto.getToAccountNumber(), transactionDto.getAmount());
+        }
+
+        String recipientBankPrefix = transactionDto.getToAccountNumber().substring(0, 6);
+        String externalApiUrl = bankService.getExternalBankUrl(recipientBankPrefix);
+
+        if (externalApiUrl == null) {
+            logger.error("No external API URL found for bank prefix: {}", recipientBankPrefix);
+            return ResponseEntity.badRequest().body(new ApiResponse("No external API found for the recipient bank."));
+        }
+
+        return bankService.transferToExternalBank(transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(),
+                transactionDto.getAmount(), externalApiUrl);
     }
 
     @PostMapping("/transfer/internal")
