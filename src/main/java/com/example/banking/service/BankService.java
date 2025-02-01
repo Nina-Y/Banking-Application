@@ -104,7 +104,8 @@ public class BankService {
             logger.info("Transfer successful! New balance: {}", sender.getBalance());
             return ResponseEntity.ok(new ApiResponse("Transfer successful", sender.getAccountNumber(), sender.getBalance()));
         } else {
-            logger.error("Transfer failed. Response: {}", response.getBody());
+            logger.error("Transfer failed. HTTP Status: {}, Response: {}",
+                    response.getStatusCode(), response.getBody());
             return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: " + response.getBody()));
         }
     }
