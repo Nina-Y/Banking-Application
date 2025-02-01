@@ -3,6 +3,7 @@ package com.example.banking.controller;
 import com.example.banking.dto.TransactionDto;
 import com.example.banking.model.BankAccount;
 import com.example.banking.service.BankService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class BankAccountController {
     }*/
 
     @PostMapping("/transfer/external")
-    public ResponseEntity<Object> transferExternal(@RequestBody TransactionDto transactionDto) {
+    public ResponseEntity<Object> transferExternal(@Valid @RequestBody TransactionDto transactionDto) {
         logger.info("Transfer started from {} to {} for amount {}",
                 transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(), transactionDto.getAmount());
         return bankService.transferToExternalBank(
