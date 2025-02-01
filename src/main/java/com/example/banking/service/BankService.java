@@ -39,7 +39,7 @@ public class BankService {
         }
     }
 
-    public ResponseEntity<Object> receiveTransferFromExternal(String toAccountNumber, double amount) {
+    /*public ResponseEntity<Object> receiveTransferFromExternal(String toAccountNumber, double amount) {
         logger.info("Initiating external transfer to {} for amount: {}", toAccountNumber, amount);
 
         BankAccount recipient = bankAccountRepository.findByAccountNumber(toAccountNumber);
@@ -59,9 +59,9 @@ public class BankService {
         }
 
         return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: invalid amount or insufficient sender balance"));
-    }
+    }*/
 
-    /*public ResponseEntity<Object> transferToExternalBank(String fromAccountNumber, String toAccountNumber, double amount) {
+    public ResponseEntity<Object> transferToExternalBank(String fromAccountNumber, String toAccountNumber, double amount) {
         logger.info("Initiating external transfer from {} to {} for amount: {}", fromAccountNumber, toAccountNumber, amount);
 
         BankAccount sender = bankAccountRepository.findByAccountNumber(fromAccountNumber);
@@ -70,7 +70,7 @@ public class BankService {
             return ResponseEntity.badRequest().body(new ApiResponse("Sender account not found or insufficient funds"));
         }
 
-        String externalApiUrl = "https://banking-application-53wg.onrender.com/api/v1/accounts/transfer/external";
+        String externalApiUrl = "http://13.60.62.171/api/v1/accounts/transfer/external";
 
         String requestBody;
         try {
@@ -107,7 +107,7 @@ public class BankService {
             logger.error("Transfer failed. Response: {}", response.getBody());
             return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: " + response.getBody()));
         }
-    }*/
+    }
 
     public ResponseEntity<Object> transferInternal(String fromAccountNumber, String toAccountNumber, double amount) {
         BankAccount sender = bankAccountRepository.findByAccountNumber(fromAccountNumber);

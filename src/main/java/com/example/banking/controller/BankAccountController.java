@@ -25,18 +25,18 @@ public class BankAccountController {
     @Autowired
     private BankService bankService;
 
-    /*@PostMapping("/transfer/external")
+    @PostMapping("/transfer/external")
     public ResponseEntity<Object> transferExternal(@RequestParam String fromAccountNumber,String toAccountNumber, double amount) {
         return bankService.transferToExternalBank(fromAccountNumber, toAccountNumber, amount);
-    }*/
+    }
 
-    @PostMapping("/transfer/external")
+    /*@PostMapping("/transfer/external")
     public ResponseEntity<Object> transferExternal(@RequestBody TransactionDto transactionDto) {
         logger.info("Transfer started from {} to {} for amount {}",
                 transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(), transactionDto.getAmount());
 
         return bankService.receiveTransferFromExternal(transactionDto.getToAccountNumber(), transactionDto.getAmount());
-    }
+    }*/
 
     @PostMapping("/transfer/internal")
     public ResponseEntity<Object> transfer(@RequestParam String fromAccountNumber, String toAccountNumber, double amount) {
