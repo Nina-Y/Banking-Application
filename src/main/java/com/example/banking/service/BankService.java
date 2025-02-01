@@ -9,10 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,28 +36,6 @@ public class BankService {
             bankAccountRepository.save(new BankAccount("SURNUM_abcdef654321", 1000.0));
         }
     }
-
-    /*public ResponseEntity<Object> receiveTransferFromExternal(String toAccountNumber, double amount) {
-        logger.info("Initiating external transfer to {} for amount: {}", toAccountNumber, amount);
-
-        BankAccount recipient = bankAccountRepository.findByAccountNumber(toAccountNumber);
-
-        if (recipient == null) {
-            logger.error("User not found");
-            return ResponseEntity.badRequest().body(new ApiResponse("One or both accounts not found"));
-        }
-
-        if (amount > 0) {
-            logger.info("Adding to the balance");
-            recipient.setBalance(recipient.getBalance() + amount);
-            bankAccountRepository.save(recipient);
-            return ResponseEntity.ok(
-                    new ApiResponse("Received transfer successfully", recipient.getAccountNumber(), recipient.getBalance())
-            );
-        }
-
-        return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: invalid amount or insufficient sender balance"));
-    }*/
 
     public ResponseEntity<Object> transferToExternalBank(String fromAccountNumber, String toAccountNumber, double amount) {
         logger.info("Initiating external transfer from {} to {} for amount: {}", fromAccountNumber, toAccountNumber, amount);

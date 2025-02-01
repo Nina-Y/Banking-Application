@@ -11,8 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+// http://localhost:8080/swagger-ui/index.html
+// https://banking-application-53wg.onrender.com/swagger-ui/index.html
+// https://banking-application-53wg.onrender.com/api/v1/accounts/public
+
 @RestController
-@RequestMapping("/api/v1/accounts") // http://localhost:8080/swagger-ui/index.html // https://banking-application-53wg.onrender.com/swagger-ui/index.html
+@RequestMapping("/api/v1/accounts")
 public class BankAccountController {
 
     private static final Logger logger = LoggerFactory.getLogger(BankService.class);
@@ -25,11 +29,6 @@ public class BankAccountController {
 
     @Autowired
     private BankService bankService;
-
-    /*@PostMapping("/transfer/external")
-    public ResponseEntity<Object> transferExternal(@RequestParam String fromAccountNumber,String toAccountNumber, double amount) {
-        return bankService.transferToExternalBank(fromAccountNumber, toAccountNumber, amount);
-    }*/
 
     @PostMapping("/transfer/external")
     public ResponseEntity<Object> transferExternal(@Valid @RequestBody TransactionDto transactionDto) {
