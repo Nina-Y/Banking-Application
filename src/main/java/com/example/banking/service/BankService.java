@@ -37,16 +37,14 @@ public class BankService {
         }
     }
 
-    public ResponseEntity<Object> transferToExternalBank(String fromAccountNumber, String toAccountNumber, double amount) {
-        logger.info("Initiating external transfer from {} to {} for amount: {}", fromAccountNumber, toAccountNumber, amount);
+    public ResponseEntity<Object> transferToExternalBank(String fromAccountNumber, String toAccountNumber, double amount, String externalApiUrl) {
+        logger.info("Initiating outgoing transfer from {} to {} for amount: {}", fromAccountNumber, toAccountNumber, amount);
 
         BankAccount sender = bankAccountRepository.findByAccountNumber(fromAccountNumber);
         if (sender == null || sender.getBalance() < amount) {
             logger.warn("Transfer failed: Sender account not found or insufficient funds.");
             return ResponseEntity.badRequest().body(new ApiResponse("Sender account not found or insufficient funds"));
         }
-
-        String externalApiUrl = "http://13.60.62.171/api/v1/accounts/transfer/external";
 
         String requestBody;
         try {
@@ -80,10 +78,37 @@ public class BankService {
             logger.info("Transfer successful! New balance: {}", sender.getBalance());
             return ResponseEntity.ok(new ApiResponse("Transfer successful", sender.getAccountNumber(), sender.getBalance()));
         } else {
-            logger.error("Transfer failed. HTTP Status: {}, Response: {}",
-                    response.getStatusCode(), response.getBody());
+            logger.error("Transfer failed. HTTP Status: {}, Response: {}", response.getStatusCode(), response.getBody());
             return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: " + response.getBody()));
         }
+    }
+
+    public ResponseEntity<Object> receiveTransferFromExternal(String toAccountNumber, double amount) {
+        logger.info("Receiving external transfer to {} for amount: {}", toAccountNumber, amount);
+
+        BankAccount recipient = bankAccountRepository.findByAccountNumber(toAccountNumber);
+        if (recipient == null) {
+            logger.error("Recipient account not found");
+            return ResponseEntity.badRequest().body(new ApiResponse("Recipient account not found"));
+        }
+
+        if (amount > 0) {
+            recipient.setBalance(recipient.getBalance() + amount);
+            bankAccountRepository.save(recipient);
+            logger.info("Received transfer successfully! New balance: {}", recipient.getBalance());
+            return ResponseEntity.ok(new ApiResponse("Received transfer successfully", recipient.getAccountNumber(), recipient.getBalance()));
+        }
+
+        return ResponseEntity.badRequest().body(new ApiResponse("Transfer failed: invalid amount"));
+    }
+
+    public String getExternalBankUrl(String bankPrefix) {
+        Map<String, String> externalBankUrls = Map.of(
+                "SOLDEN", "http://13.60.62.171/api/v1/accounts/transfer/external" // SOLDEN_05747398874c
+                // ,"SURNAM", "http://other-bank.com/api/v1/accounts/transfer/external"
+        );
+
+        return externalBankUrls.get(bankPrefix);
     }
 
     public ResponseEntity<Object> transferInternal(String fromAccountNumber, String toAccountNumber, double amount) {
