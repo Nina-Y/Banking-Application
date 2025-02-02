@@ -104,7 +104,8 @@ public class BankService {
 
     public String getExternalBankUrl(String bankPrefix) {
         Map<String, String> externalBankUrls = Map.of(
-                "SOLDEN", "http://13.60.62.171/api/v1/accounts/transfer/external" // ,"SURNAM", "http://other-bank.com/api/v1/accounts/transfer/external"
+                "SOLDEN", "http://13.60.62.171/api/v1/accounts/transfer/external" // SOLDEN_05747398874c
+                // ,"SURNAM", "http://other-bank.com/api/v1/accounts/transfer/external"
         );
 
         return externalBankUrls.get(bankPrefix);
