@@ -36,7 +36,7 @@ public class BankAccountController {
         logger.info("Processing external transfer from {} to {} for amount {}",
                 transactionDto.getFromAccountNumber(), transactionDto.getToAccountNumber(), transactionDto.getAmount());
 
-        if (transactionDto.getToAccountNumber().equals("YUSNIN_abcdef123456")) {
+        if (transactionDto.getToAccountNumber().equals(bankService.getMyAccountNumber())) {
             return bankService.receiveTransferFromExternal(transactionDto.getToAccountNumber(), transactionDto.getAmount());
         }
 
@@ -88,6 +88,16 @@ public class BankAccountController {
     @GetMapping("/public")
     public ResponseEntity<Object> getAllAccounts() {
         return bankService.getAllAccounts();
+    }
+
+    @GetMapping("/{bankPrefix}/example-accounts")
+    public ResponseEntity<Object> getExampleAccounts(@PathVariable String bankPrefix) {
+        String exampleAccounts = bankService.getExampleAccounts(bankPrefix);
+        if (exampleAccounts != null) {
+            return ResponseEntity.ok(exampleAccounts);
+        } else {
+            return ResponseEntity.badRequest().body("Bank prefix not found");
+        }
     }
 
     @GetMapping("/internal")

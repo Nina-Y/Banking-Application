@@ -2,11 +2,14 @@ package com.example.banking.service;
 
 import com.example.banking.model.ApiResponse;
 import com.example.banking.model.BankAccount;
+import com.example.banking.model.BankMapping;
 import com.example.banking.repository.BankAccountRepository;
+import com.example.banking.repository.BankMappingRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,11 +22,20 @@ public class BankService {
 
     private static final Logger logger = LoggerFactory.getLogger(BankService.class);
 
+    @Value("${bank.account.number}")
+    private String myAccountNumber;
+
+    public String getMyAccountNumber() {
+        return myAccountNumber;
+    }
+
     private final BankAccountRepository bankAccountRepository;
+    private final BankMappingRepository bankMappingRepository;
     private final RestTemplate restTemplate;
 
-    public BankService(BankAccountRepository bankAccountRepository, RestTemplate restTemplate) {
+    public BankService(BankAccountRepository bankAccountRepository, BankMappingRepository bankMappingRepository, RestTemplate restTemplate) {
         this.bankAccountRepository = bankAccountRepository;
+        this.bankMappingRepository = bankMappingRepository;
         this.restTemplate = restTemplate;
     }
 
@@ -34,6 +46,24 @@ public class BankService {
         }
         if (bankAccountRepository.findByAccountNumber("SURNUM_abcdef654321") == null) {
             bankAccountRepository.save(new BankAccount("SURNUM_abcdef654321", 1000.0));
+        }
+    }
+
+    @PostConstruct
+    public void initBankMappings() {
+        if (bankMappingRepository.findByBankPrefix("SOLDEN") == null) {
+            bankMappingRepository.save(new BankMapping(
+                    "SOLDEN",
+                    "http://13.60.62.171/api/v1/accounts/transfer/external",
+                    "SOLDEN_05747398874c,SOLDEN_b000a5fe147f"
+            ));
+        }
+        if (bankMappingRepository.findByBankPrefix("SURNAM") == null) { // my, for tests
+            bankMappingRepository.save(new BankMapping(
+                    "SURNAM",
+                    "https://banking-application-53wg.onrender.com/api/v1/accounts/transfer/external",
+                    "SURNUM_abcdef654321"
+            ));
         }
     }
 
@@ -103,12 +133,13 @@ public class BankService {
     }
 
     public String getExternalBankUrl(String bankPrefix) {
-        Map<String, String> externalBankUrls = Map.of(
-                "SOLDEN", "http://13.60.62.171/api/v1/accounts/transfer/external" // SOLDEN_05747398874c
-                // ,"SURNAM", "http://other-bank.com/api/v1/accounts/transfer/external"
-        );
+        BankMapping bankMapping = bankMappingRepository.findByBankPrefix(bankPrefix);
+        return (bankMapping != null) ? bankMapping.getApiUrl() : null;
+    }
 
-        return externalBankUrls.get(bankPrefix);
+    public String getExampleAccounts(String bankPrefix) {
+        BankMapping bankMapping = bankMappingRepository.findByBankPrefix(bankPrefix);
+        return (bankMapping != null) ? bankMapping.getExampleAccounts() : null;
     }
 
     public ResponseEntity<Object> transferInternal(String fromAccountNumber, String toAccountNumber, double amount) {
